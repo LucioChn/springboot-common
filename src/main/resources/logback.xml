@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <property name="filters"
+              value="full,$Proxy,javax.crypto.Cipher,com.sun.,sun.reflect.,java.lang.reflect.,java.io.,java.net.,org.eclipse.jetty.,org.apache.cxf.,org.springframework.beans.,org.springframework.context.,org.apache.commons.httpclient.,org.apache.commons.pool.,org.apache.http.,io.netty.,org.junit.,org.apache.maven.,org.springframework.amqp.rabbit." />
+    <property name="layout" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level [%thread] [traceId-%X{traceId}] %logger{50}%n
+                - %msg%n"/>
+
+    <property name="maxHistory" value="30" />
+    <property name="maxFileSize" value="50MB" />
+
+    <appender name="console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${layout}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="logFile"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/server.log</File>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>./logs/server%d{yyyy-MM-dd}_%i.log</FileNamePattern>
+            <MaxHistory>${maxHistory}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <pattern>${layout}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="toLogFileAsync"
+              class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="logFile" />
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="toLogFileAsync" />
+        <appender-ref ref="console" />
+    </root>
+
+</configuration>
